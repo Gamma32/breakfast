@@ -6,11 +6,11 @@ $file_db->setAttribute(PDO::ATTR_ERRMODE,
 		PDO::ERRMODE_EXCEPTION);
 
 if(!isset($_GET['action'])){
-	header ("Location: ./blank.html"); 	
+	header ("Location: ./index.html"); 	
 }else{
 	switch ($_GET['action']){
 		case 'install':
-			
+			//Action to initial create the database table
 			$file_db->exec("CREATE TABLE IF NOT EXISTS voting (
 						id INTEGER PRIMARY KEY,
 						date INTEGER,
@@ -18,8 +18,12 @@ if(!isset($_GET['action'])){
 					)");
 			break;
 		case 'addRating':
+			
+			//Get the time for 
 			$date = time();
 			$rating = $_POST['rating'];
+			
+			
 			$insert = "INSERT INTO voting (date, rating)
                 VALUES (:date, :rating)";
 			$stmt = $file_db->prepare($insert);
@@ -28,13 +32,16 @@ if(!isset($_GET['action'])){
 			$stmt->bindParam(':date', $date);
 			$stmt->bindParam(':rating', $rating);
 			
+			//And write the date into the database
 			$stmt->execute();
 			
-			header ("Location: ./blank.html"); 	
+			//Redirect to index file
+			header ("Location: ./index.html"); 	
 			break;
 			
 		case 'getRatings':
 			
+			//Select 
 			$result = $file_db->query('SELECT * FROM voting');
 			
 			echo '{
@@ -45,11 +52,8 @@ if(!isset($_GET['action'])){
 			  "rows": [';
 			  
 			foreach($result as $row){
+				
 				echo '{"c":[{"v":"'.date('d/m/y',$row['date']).'"},{"v":'.$row['rating'].'}]},';
-				/*echo $row['date'];
-				echo "\n";
-				echo $row['rating'];
-				echo "\n";*/
 			}
 			
 			echo ' ]
@@ -58,7 +62,5 @@ if(!isset($_GET['action'])){
 			break;
 	}
 }
-
-
 
 ?>
